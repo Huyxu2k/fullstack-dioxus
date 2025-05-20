@@ -1,13 +1,21 @@
 [package]
 name = "frontend"
 version = "0.1.0"
-authors = ["huynv <huynv@phucthanhgroup.com>"]
+authors = ["huynv <nguyenhuy@gmail.com>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 dioxus = { version = "0.6.0", features = ["router"] }
+gloo-storage = "0.3.0"
+log = "0.4.27"
+
+wasm-logger = "0.2.0"
+console_error_panic_hook = "0.1.7"
+
+reqwest = { version="0.12.15", features = [ "blocking", "json" ] }
+dioxus-core = "0.6.3"
 
 [features]
 default = ["web"]

@@ -1,10 +1,12 @@
-#![allow(non_snake_case)]
+// #![allow(non_snake_case)]
 
 mod pages;
 mod components;
 mod store;
 mod middleware;
+mod app;
 
+use components::sidebar_item::SidebarItem;
 use dioxus::prelude::*;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -40,7 +42,6 @@ pub fn Hero() -> Element {
     rsx! {
         div {
             id: "hero",
-            img { src: HEADER_SVG, id: "header" }
             div { id: "links",
                 a { href: "https://dioxuslabs.com/learn/0.6/", "📚 Learn Dioxus" }
                 a { href: "https://dioxuslabs.com/awesome", "🚀 Awesome Dioxus" }
@@ -87,22 +88,92 @@ pub fn Blog(id: i32) -> Element {
     }
 }
 
-/// Shared navbar component.
+
 #[component]
 fn Navbar() -> Element {
+    let mut is_collapsed= use_signal(|| false);
     rsx! {
         div {
-            id: "navbar",
-            Link {
-                to: Route::Home {},
-                "Home"
+            class: "flex h-screen",
+           
+           // Sidebar
+            aside {
+                class: format_args!("bg-gray-100 h-full p-4 flex flex-col z-50 transiton-all duration-300 {}",
+                    if is_collapsed(){ "w-16"} else {"w-64"}
+                ),
+                //Side header
+                div {  
+                    class: "flex items-center justify-between mb-4",
+                    //logo
+                    div {
+                        class: format_args!(
+                            "transition-all duration-300 overflow-hidden whitespace-nowrap text-xl font-bold text-gray-800 {}",
+                            if is_collapsed(){
+                                "max-w-0 opacity-0"
+                            }else{
+                                "max-w-xs opacity-100"
+                            }
+                        ),
+                        " My App"
+                    }
+
+                    button {  
+                        class: "mb-4 text-gray-600 hover:text-black ",
+                        onclick: move |_| is_collapsed.set(!is_collapsed()),
+                        if is_collapsed(){"1"} else {"2"} 
+                    }
+                }
+
+                //Menu items
+                nav { 
+                    class: "space-y-4 flex-1",
+                    SidebarItem {
+                        icon: "🏠",
+                        label: "Home",
+                        to: Route::Home {},
+                        collapsed: is_collapsed(),
+                    }
+
+                    SidebarItem {
+                        icon: "📝", 
+                        label: "Blog",
+                        to: Route::Blog { id: 1},
+                        collapsed: is_collapsed(),
+                    }
+                }
+                
             }
-            Link {
-                to: Route::Blog { id: 1 },
-                "Blog"
+            
+            // Content
+            div {  
+                class: "flex-1 flex flex-col",
+
+                // Header
+                header {
+                    class: "bg-gray-800 text-white px-4 py-3 flex justify-between items-center",
+                    h1 { 
+                        class: "text-xl font-bold",
+                        "🌐 My Dioxus App" 
+                    }
+
+                    button {   
+                        class: "bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded",
+                        "Logout"
+                    }
+                }
+                // Main content
+                main {
+                    class: "flex-1 bg-gray-50 p-6 overflow-y-auto",
+                    // Đây là nơi các trang con (Home, Blog) sẽ hiển thị
+                    Outlet::<Route> {}
+                }
+    
+                footer {
+                    class: "bg-gray-800 text-white p-4 text-center",
+                    p { "© 2025 This Dioxus App is created  by HSPM. All rights reserved." }
+                }
             }
         }
-
-        Outlet::<Route> {}
     }
 }
+
