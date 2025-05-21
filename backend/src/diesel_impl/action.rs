@@ -1,10 +1,7 @@
 use diesel::prelude::*;
-use crate::domain::error::RepoError;
 use crate::domain::permission::repo::{Action, Type};
 use super::schema::{actions};
-use super::pool::{self, DbConn};
 use std::str::FromStr;
-use std::sync::Arc;
 
 #[derive(Debug,Queryable,Selectable)]
 #[diesel(table_name=actions)]
@@ -15,12 +12,12 @@ pub struct ActionDiesel{
     pub description: Option<String>
 }
 
-impl Into<Action> for ActionDiesel{
-    fn into(self) -> Action {
+impl From<ActionDiesel> for Action{
+    fn from(value: ActionDiesel) -> Self {
         Action { 
-            id: self.id, 
-            key: Type::from_str(&self.key).unwrap(),
-            description: self.description.unwrap_or("".to_owned())
+            id: value.id, 
+            key: Type::from_str(&value.key).unwrap_or(Type::READ),
+            description: value.description.unwrap_or("".to_owned())
         }
     }
 }
