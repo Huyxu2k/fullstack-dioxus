@@ -41,18 +41,18 @@ pub struct NewRole {
 }
 
 // impl repo
-pub struct RoleDieseImpl{
+pub struct RoleDieselImpl{
     pool: Arc<DbConn>,
 }
 
-impl RoleDieseImpl {
+impl RoleDieselImpl {
     pub fn new(pool: Arc<DbConn>)-> Self{
-        RoleDieseImpl { pool }
+        RoleDieselImpl { pool }
     }
 }
 
 #[async_trait::async_trait]
-impl RoleRepo for RoleDieseImpl {
+impl RoleRepo for RoleDieselImpl {
     async fn get(&self) -> Result<Vec<Role>, RepoError>{
         let pool = self.pool.clone();
         pool::run(move || {

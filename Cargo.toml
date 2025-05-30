@@ -1,5 +1,5 @@
 [workspace]
-members = ["backend", "common_model", "frontend"]
+members = ["backend", "common_model"]
 resolver = "2"
 
 [profile]

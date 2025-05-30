@@ -3,7 +3,7 @@ use axum::{
     Json,
 };
 
-use crate::modules::CommonError;
+use crate::domain::error::CommonError;
 
 
 #[derive(Debug)]

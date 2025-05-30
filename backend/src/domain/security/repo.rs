@@ -37,14 +37,24 @@ pub trait SecurityService: Send + Sync {
 
     async fn verify_jwt(&self, token: String)-> Result<bool, CommonError>;
 
-    async fn create_jwt(&self, user: &User) -> Result<Token, CommonError>;
+    async fn create_jwt(&self, user: &User) -> Result<String, CommonError>;
 
     async fn decode(&self, token: &str) -> Result<TokenData<Claims>, CommonError>;
 
     async fn encode(&self, claim: Claims) -> Result<String, CommonError>;
 }
+
+#[derive(Clone)]
 pub struct SecurityServiceImpl {
     pub key: String,
+}
+
+impl SecurityServiceImpl {
+    pub fn new() -> Self {//key: &str
+        let key = std::env::var("JWT_SECRET").unwrap_or("TEST".to_owned());
+
+        Self { key }
+    }
 }
 
 #[async_trait]
@@ -70,7 +80,7 @@ impl SecurityService for SecurityServiceImpl {
         }
     }
 
-    async fn create_jwt(&self, user: &User) -> Result<Token, CommonError> {
+    async fn create_jwt(&self, user: &User) -> Result<String, CommonError> {
         let time_origin = chrono::Utc::now();
         let now = time_origin.clone().timestamp();
         let exp = now + EXPIRES;
@@ -86,7 +96,7 @@ impl SecurityService for SecurityServiceImpl {
             .await
             .map_err(|e| e.into())?;
 
-        Ok(Token(token))
+        Ok(token)
     }
 
     async fn decode(&self, token: &str) -> Result<TokenData<Claims>, CommonError> {

@@ -128,7 +128,7 @@ impl UserRepo for UserDieselImpl {
         .await
         .map_err(|e| RepoError::from(e))?
     }
-    async fn create(&self, user: CreateUserRequest) -> Result<User, RepoError>{
+    async fn create(&self, username: String, email: String, password_hash: String) -> Result<User, RepoError>{
         let pool = self.pool.clone();
         let inserted_id = pool::run(move || {
             let mut conn = pool
@@ -137,9 +137,9 @@ impl UserRepo for UserDieselImpl {
 
             let new_user = NewUser { 
                 employee_id: None, 
-                username: user.user_name, 
-                password_hash: user.password, 
-                email: user.email, 
+                username: username, 
+                password_hash: password_hash, 
+                email: email, 
                 is_active: Some(true), 
                 created_at: Some(chrono::Utc::now().naive_utc()) 
             };
